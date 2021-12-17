@@ -182,4 +182,184 @@ func main() {
 	var students [3]string //- declares an empty array
 	students[0] = "Lisa"
 
+	// Two dim matrix
+	var identityMatrix = [3][3]int{}
+	identityMatrix[0] = [3]int{1, 0, 1}
+
+	a := [...]int{1, 2, 3}
+	bCopy := &a
+	bCopy[1] = 5
+	fmt.Println(a)
+	fmt.Println(bCopy)
+
+	// Slice
+	//
+	slc := []int{1, 2, 3}
+	fmt.Println(slc)
+	fmt.Printf("%v", len(slc))
+	fmt.Printf("%v\n", cap(slc))
+
+	/**
+	number of elements in the slice doesn't the size of the backing array. Slice is a projection of the underlying array
+	Slices are by default reference types. They refer to the same underlying data
+	*/
+
+	slc1 := slc
+	slc1[1] = 5 // this would change the value in slc as well
+	fmt.Println(slc)
+	fmt.Println(slc1)
+	/**
+	Other ways of creating slices
+	*/
+	aSlc := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	bSlc := aSlc[:]   // slice of all elements
+	cSlc := aSlc[3:]  // slice from 4th to end
+	dSlc := aSlc[:6]  // Slice first 6 elements
+	eSlc := aSlc[3:6] // slice the 4,5,6th elements
+	fmt.Println(aSlc)
+	fmt.Println(bSlc)
+	fmt.Println(cSlc)
+	fmt.Println(dSlc)
+	fmt.Println(eSlc)
+
+	// Chaning the value in the underlying array, will change the value in all the slices referencing to it
+	aSlc[5] = 42
+	fmt.Println(aSlc)
+	fmt.Println(bSlc)
+	fmt.Println(cSlc)
+	fmt.Println(dSlc)
+	fmt.Println(eSlc)
+
+	// Make function arg2: length of the slice, arg3: capacity
+	aMake := make([]int, 3, 100)
+	aMake = append(aMake, 55, 66, 76, 88, 98)
+	fmt.Println(aMake)
+
+	bMake := make([]int, 0, 0)
+	fmt.Println(bMake)
+
+	// append
+	bMake = append(bMake, 1, 2, 3, 4, 5)
+	fmt.Println(bMake)
+	fmt.Println("Length:", len(bMake))
+	fmt.Println("Capacity:", cap(bMake))
+
+	// concatenate slices
+	// use spread operator (...)  to append
+	bMake = append(bMake, aMake...)
+	fmt.Println(bMake)
+
+	// remove elements in the middle lets say remove 4
+	bMake = append(bMake[:2], bMake[4:]...)
+	fmt.Println(bMake)
+
+	/**
+	MAPS
+	syntax: map[key]value
+	An array is a valid key type to the map, a slice is not
+	*/
+
+	dMap := map[string]int{
+		"Cali":  12345,
+		"Texas": 34567,
+	}
+	fmt.Println(dMap)
+	// other different types of map declaration
+	eMap := make(map[string]int)
+	eMap = dMap
+	fmt.Println(eMap)
+	eMap["Florida"] = 5345345
+	fmt.Println(eMap)
+
+	// delete func
+	delete(eMap, "Florida")
+
+	// 1st param gets the value, 2nd params tells you whether the element was in the map or not
+	// val would default to the type default - 0 for int type values
+	val, ok := eMap["Florida"]
+	fmt.Println(val, ok)
+
+	// Side Effect:  By default, the maps are also pass by reference. Any mutation would affect the original
+	fMap := eMap
+	delete(fMap, "Texas")
+	fmt.Println(eMap)
+
+	/**
+	Struct
+	Allows to mix any type of data together
+
+	Casing rules apply for both the struct name and the fields within it
+	uppercases - export and lowercases private to the module
+
+	Unlike maps and slices, when you copy a struct into another, we are copying data into (and not a reference).
+	*/
+	type Doctor struct {
+		number     int
+		actorName  string
+		companions []string
+	}
+
+	// alternate syntax: positional syntax is also allowed. Dont use it though - maintenance problem
+	aDoctor := Doctor{
+		number:    3,
+		actorName: "Jon Poewty",
+		companions: []string{
+			"Joe Shaw",
+			"Shaw Joe",
+			"Joo joo",
+		},
+	}
+	fmt.Println(aDoctor)
+	fmt.Println(aDoctor.companions[2])
+
+	// anonymouse struct
+	aStruct := struct {
+		name string
+	}{name: "Joey Joey"}
+	fmt.Println(aStruct)
+
+	bStruct := aDoctor // copies the values and the type into bstruct
+	bStruct.actorName = "Slly Silly"
+	fmt.Println(aDoctor) // retains the originally assigned vaLUE
+	fmt.Println(bStruct) // RETAINS THE CHANGES WE DID TO IT : Silly Silly
+
+	// if we do want to point to the same underlying data, we can use & operator
+	cStruct := &aDoctor
+	cStruct.actorName = "name changed to Silly"
+	fmt.Println(aDoctor)
+	fmt.Println(cStruct)
+
+	/**
+	Composition
+	Go doesn't support inheritance
+	*/
+
+	type Animal struct {
+		Name   string
+		Origin string
+	}
+
+	type Bird struct {
+		Animal
+		SpeedKMPH float32
+		CanFly    bool
+	}
+
+	bBird := Bird{}
+	bBird.Name = "Emu"
+	bBird.Origin = "Aussie"
+	bBird.SpeedKMPH = 50
+	bBird.CanFly = false
+	fmt.Println(bBird)
+
+	/**
+	tags
+	Tags can be added to structs field to describe field
+	You can add some optional validation params here. Parse it with reflection and m
+	*/
+
+	type Animal1 struct {
+		Name   string `required max: "100"`
+		Origin string
+	}
 }
