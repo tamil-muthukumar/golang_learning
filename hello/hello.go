@@ -453,4 +453,38 @@ func main() {
 	for _, v := range statePop {
 		fmt.Println(v)
 	}
+
+	/**
+	Defer, Panic, Recover
+
+	Defer: Executes the statement preceded with go after it finishes executing the last statement in the function and before it returns
+	If there are multiple defer statements it is executed in LIFO order
+	Defer executed BEFORE panic is called
+	*/
+
+	deferA := "start"
+
+	// Prints "start" as the defer statement is evaluated at the time the defer is called and not at the time when defer is executed in the function
+	defer fmt.Println(deferA)
+	deferA = "end"
+
+	// Panic
+	//panicA, panicB := 1, 0
+	//panicAns := panicA / panicB
+	//fmt.Println(panicAns) // returns: panic: runtime error: integer divide by zero
+	//panic("something bad happened")
+
+	/**
+	Recover:
+	Anonymous function - a function which doesn't have a name. Nothing else can call this
+
+	// calling recover inside defer func allows us to handle the panic on our own.
+	*/
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("Error:", err)
+			panic(err) // throw this to the calling function if you think that function to handle it
+		}
+	}()
+
 }
