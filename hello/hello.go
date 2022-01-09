@@ -547,4 +547,109 @@ func main() {
 	fmt.Println(ptrSliceA, ptrSliceB) // prints [1 2 3] [1 2 3]
 	ptrSliceA[1] = 42
 	fmt.Println(ptrSliceA, ptrSliceB) // [1 42 3] [1 42 3] - this is because slice is already a pointer to an underlying array
+
+	/**
+	Functions
+
+	Entrypoint into application is main() in package main
+
+
+	*/
+	message := "message"
+	greeting := "greeting"
+	sayMessage("Hello say message")
+	sayGreeting(message, greeting)
+	fmt.Println("Before calling pointer ", greeting)
+	sayGreetingWithPtr(&message, &greeting)
+	fmt.Println("After calling pointer ", greeting) // prints "Greetings changed with pointer"
+	variadicParams(1, 2, 3, 4, 5, 6)
+	retVal := pointerRetVal(1, 2, 3, 4, 5, 6)
+	fmt.Println(*retVal)
+
+	retVal1, err := multRetVals(1, 0)
+	if err != nil {
+		fmt.Println("error")
+	} else {
+		fmt.Println(retVal1)
+	}
+
+	g := greeter{
+		greeting: "Hello",
+		name:     "Go",
+	}
+
+	g.greet()
+
+	g.greetWithPtr()
+}
+
+func sayMessage(msg string) {
+	fmt.Println(msg)
+}
+
+// args of same type (string in this example) can be delimited
+func sayGreeting(msg, greeting string) {
+	fmt.Println(msg)
+}
+
+func sayGreetingWithPtr(msg, greeting *string) {
+	fmt.Println(*msg, *greeting)
+	*greeting = "Greetings changed with pointer"
+}
+
+/** Variadic Params
+There can be only one arg with variadic params and it should be the last arg in the func
+**/
+
+func variadicParams(values ...int) int /**this is the return type*/ {
+	fmt.Println(values) // slice
+	// you can loop through those values and do whatever
+	return 0
+}
+
+func pointerRetVal(values ...int) *int {
+	result := 0
+
+	/**
+	When you are returning a reference to a variable from a function, the variable's memory that's local to the function doesn't get cleaned up.
+	it's automatically promoted to be on the heap memory
+	*/
+	return &result // return the reference to the result var
+}
+
+func namedRetVal(values ...int) (result int) {
+	// Named returnvalue => result is the name of the variable that will be returned from the method
+
+	return
+}
+
+// Multiple return values from the function
+func multRetVals(a, b int) (int, error) {
+
+	if b == 0 {
+		return 1, fmt.Errorf("b is set to 0") // this is set in error return variable
+	}
+	// success case
+	return 0, nil // nil representing that there were no errors
+}
+
+type greeter struct {
+	greeting string
+	name     string
+}
+
+/*
+This is a method. The presence (g greeter) a known context makes it a method( and not a function)
+The known context could be any type
+
+When this method is called, its called with greet object defiined in main above. The method receives a copy of the object (as opposed to a pointer to the object)
+*/
+func (g greeter) greet() {
+	// we are operating on the copy of copy object
+	fmt.Println(g.greeting, g.name)
+}
+
+func (g *greeter) greetWithPtr() {
+	// we are operating on the pointer of the object
+	fmt.Println(g.greeting, g.name)
 }
