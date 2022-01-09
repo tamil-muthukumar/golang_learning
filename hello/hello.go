@@ -459,7 +459,8 @@ func main() {
 
 	Defer: Executes the statement preceded with go after it finishes executing the last statement in the function and before it returns
 	If there are multiple defer statements it is executed in LIFO order
-	Defer executed BEFORE panic is called
+	Defer executed BEFORE panic is called.
+	Avoid using calling defer in loops as it would defer closing the resources until the end of the function is reached
 	*/
 
 	deferA := "start"
@@ -468,17 +469,23 @@ func main() {
 	defer fmt.Println(deferA)
 	deferA = "end"
 
-	// Panic
-	//panicA, panicB := 1, 0
-	//panicAns := panicA / panicB
-	//fmt.Println(panicAns) // returns: panic: runtime error: integer divide by zero
-	//panic("something bad happened")
+	/** Panic
+	panicA, panicB := 1, 0
+	panicAns := panicA / panicB
+	fmt.Println(panicAns) // returns: panic: runtime error: integer divide by zero
+	panic("something bad happened")
+	Use for unrecoverable events - cannot obtain TCP port for web server
+	Don't use when file can't be opened unless it is critical
+	If nothing handles panic, eventually panic will go up the call stack and hits the go runtime.
+
+	**/
 
 	/**
 	Recover:
 	Anonymous function - a function which doesn't have a name. Nothing else can call this
-
-	// calling recover inside defer func allows us to handle the panic on our own.
+	Only useful inside deferred functions because fo the behavior of panic functions. When an application starts to panic,
+	it no longer executes the rest of the function, but will execute deferred function
+	calling recover inside defer func allows us to handle the panic on our own.
 	*/
 	defer func() {
 		if err := recover(); err != nil {
@@ -487,4 +494,57 @@ func main() {
 		}
 	}()
 
+	/**
+	POINTERS
+	-> Creating Pointers
+	-> Dereferencing pointers
+	-> the new function
+	-> working with nil
+	-> types with internal pointers
+	*/
+
+	ptrA := 42
+	ptrB := ptrA // copies value of a into b
+	fmt.Println(ptrB)
+
+	var ptrC int = 79
+	var ptrD *int = &ptrC // declares this var as a pointer to an integer
+
+	fmt.Println(ptrC, ptrD)
+	fmt.Println(&ptrC) // notice that ptrD above points to the same address as of ptrC
+
+	// An asterisk * in front of as pointer variable is used to defreference - meaning, ask go runtime to
+	// go to the location the pointer var ptrD is pointing to and pull the value out
+	fmt.Println(*ptrD) // prints 79
+
+	*ptrD = 84
+	fmt.Println(ptrC, *ptrD) // prints 84 for both vars
+
+	ptrArr := [3]int{1, 2, 3}
+	ptrArrB := &ptrArr[0] // gets the address of array index 0
+	ptrArrC := &ptrArr[1]
+
+	fmt.Println(ptrArr, *ptrArrB, *ptrArrC) // prints [1 2 3] 1 2
+
+	// pointers with structs
+	type myStruct struct {
+		foo int
+	}
+
+	// this is one way of initializing a pointer to an object
+	var ms *myStruct // a pointer to myStruct
+	ms = &myStruct{foo: 420}
+	fmt.Println(ms) // prints &{42}
+	fmt.Println(*ms)
+	fmt.Println(ms.foo) // prints 42 - structs are automatically dereferenced for us. this is expr is equivalent to (*ms).foo
+
+	// Another way is using the builtin new function
+	// note that it cannot be initialized at the same time
+
+	// Types with internal pointers: slices and Map has a pointer to the first element in the underlying array. Hence the below example
+	ptrSliceA := []int{1, 2, 3}
+	ptrSliceB := ptrSliceA            // gets the address of array index 0
+	fmt.Println(ptrSliceA, ptrSliceB) // prints [1 2 3] [1 2 3]
+	ptrSliceA[1] = 42
+	fmt.Println(ptrSliceA, ptrSliceB) // [1 42 3] [1 42 3] - this is because slice is already a pointer to an underlying array
 }
