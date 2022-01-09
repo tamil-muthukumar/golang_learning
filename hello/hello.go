@@ -362,4 +362,95 @@ func main() {
 		Name   string `required max: "100"`
 		Origin string
 	}
+
+	/**
+	Conditionals
+	Always need curly braces around if block
+	**/
+	statePop := map[string]int{
+		"Cali":    4345435435,
+		"Texas":   343243242,
+		"Florida": 32432424,
+	}
+
+	if pop, ok := statePop["Cali"]; ok {
+		fmt.Println(pop)
+	}
+	/**
+	Switch:
+	break keyword is implicit
+	*/
+	switch 4 {
+	case 1, 5, 10:
+		fmt.Println("Cases 1, 5, 10")
+	case 9, 4, 3:
+		fmt.Println("cases 9, 4, 3")
+	}
+
+	switch i := 2 + 3; i {
+	case 1, 5, 10:
+		fmt.Println("Cases 1, 5, 10")
+	case 9, 4, 3:
+		fmt.Println("cases 9, 4, 3")
+	}
+
+	switchI := 10
+	switch {
+	case switchI <= 10:
+		fmt.Println("less than 10")
+		fallthrough // lets multiples cases to execute
+	case switchI <= 20:
+		fmt.Println("less than 20")
+	}
+	//Type Switch
+	var switchTypeI interface{} = 1
+	switch switchTypeI.(type) {
+	case int:
+		fmt.Println("type int")
+	}
+
+	/**
+	Looping
+	i++ and j++ cannot be assigned to a variable like below
+	i, j = i++, j++
+
+	because i++ is an expression on its own
+
+	Loops:
+	for initializer; test; incrementer {}
+	for test {}
+	for {}
+	*/
+	for i, j := 0, 0; i < 5; i, j = i+1, j+1 {
+		fmt.Println(i, j)
+	}
+
+	// continue and break keywords can be used in for loop
+	iFor := 0
+	for {
+		fmt.Println(iFor)
+		iFor++
+		if iFor == 5 {
+			break
+		}
+	}
+
+	// Loops with collections
+	// range is a special form of for loop
+
+	forSlice := []int{1, 2, 3}
+	for k, v := range forSlice {
+		// k=> index, v=> value
+		fmt.Println(k, v)
+	}
+
+	// same syntax for looping over a map
+	for k, v := range statePop {
+		fmt.Println(k, v)
+	}
+
+	// ignore the key with the  _
+	for _, v := range statePop {
+		fmt.Println(v)
+	}
 }
