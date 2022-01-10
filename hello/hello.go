@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 )
@@ -581,6 +582,21 @@ func main() {
 	g.greet()
 
 	g.greetWithPtr()
+
+	/** Interfaces
+	**/
+
+	var w Writer = ConsoleWriter{} // ConsoleWriter is the concrete implementation. This could be replaced with FileWriter, TCP writer etc establishing a polymorphic behavior
+	w.Write([]byte("Hello Go000000000!"))
+
+	// Another way of implementing interfaces
+	myInt := IntCounter(0)
+	var inc Incrementer = &myInt
+	for i := 0; i < 10; i++ {
+		fmt.Println(inc.Increment())
+	}
+
+	// end of main function
 }
 
 func sayMessage(msg string) {
@@ -639,10 +655,13 @@ type greeter struct {
 }
 
 /*
+Methods are functions that executes in context of a type
 This is a method. The presence (g greeter) a known context makes it a method( and not a function)
 The known context could be any type
 
 When this method is called, its called with greet object defiined in main above. The method receives a copy of the object (as opposed to a pointer to the object)
+
+The variable g here is called the value receiver of the method
 */
 func (g greeter) greet() {
 	// we are operating on the copy of copy object
@@ -652,4 +671,57 @@ func (g greeter) greet() {
 func (g *greeter) greetWithPtr() {
 	// we are operating on the pointer of the object
 	fmt.Println(g.greeting, g.name)
+}
+
+/**
+Interfaces
+Doesn't describe data...but describes behavior
+Interfaces are implicitly implemented in GO.
+Meaning there is no use of implments keyword. its implemented with sructs
+*/
+
+// An example interface to write bytes to something..it could be console, TCP connection or a file system
+type Writer interface {
+	// invoked in main method
+	Write([]byte) (int, error)
+}
+
+// structs can be used for implementing the interfaces
+// Using structs to implement interfaces is just one way of implementing interfaces
+type ConsoleWriter struct{}
+
+func (cw ConsoleWriter) Write(data []byte) (int, error) {
+	n, err := fmt.Println(string(data))
+	return n, err
+}
+
+// Interface
+// Any type that can have a method associated with it can implement an interface
+// Note: invoked in main func
+type Incrementer interface {
+	Increment() int
+}
+
+// type alias for an integer.
+type IntCounter int
+
+func (ic *IntCounter) Increment() int {
+	// since IntCounter is a type alias for an integer, it can be incremented as below
+	*ic++
+	return int(*ic)
+}
+
+// How to compose interfaces together
+type Closer interface {
+	Close() error
+}
+
+type WriterCloser interface {
+	Writer
+	Closer
+}
+
+// Declared but not implmented
+type BufferedWriterCloser struct {
+	buffer *bytes.Buffer
 }
