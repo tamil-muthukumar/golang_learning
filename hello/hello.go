@@ -596,7 +596,20 @@ func main() {
 		fmt.Println(inc.Increment())
 	}
 
+	tags := map[string]string{}
+	tags["hello"] = "heyyy there"
+	tags["pre defer"] = "pre defere"
+	defer trackEvent(tags)
+	tags["after_hello"] = "after heyyy there"
+	tags["after_pre_defer"] = "after pre defere"
 	// end of main function
+}
+
+func trackEvent(tags map[string]string) {
+	fmt.Println("TRACK EVENT DEFER FUNC")
+	for k, v := range tags {
+		fmt.Println(k, v)
+	}
 }
 
 func sayMessage(msg string) {
